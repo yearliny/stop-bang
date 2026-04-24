@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>STOP-BANG · OSA Risk Screening</title>
+<style>
+  :root {
+    --bg: oklch(98.5% 0.008 180);
+    --surface: oklch(100% 0 0);
+    --ink: oklch(25% 0.015 220);
+    --ink-soft: oklch(45% 0.015 220);
+    --ink-mute: oklch(62% 0.012 220);
+    --line: oklch(92% 0.012 190);
+    --line-strong: oklch(85% 0.015 190);
+
+    --mint: oklch(72% 0.095 180);
+    --mint-deep: oklch(55% 0.095 185);
+    --mint-ink: oklch(38% 0.065 190);
+    --mint-tint: oklch(96% 0.022 180);
+    --mint-tint-2: oklch(92% 0.035 180);
+
+    --low: oklch(68% 0.11 155);
+    --low-tint: oklch(95% 0.035 155);
+    --low-ink: oklch(38% 0.08 155);
+
+    --mid: oklch(80% 0.13 85);
+    --mid-tint: oklch(96% 0.045 85);
+    --mid-ink: oklch(45% 0.12 65);
+
+    --high: oklch(65% 0.17 25);
+    --high-tint: oklch(95% 0.035 25);
+    --high-ink: oklch(42% 0.14 25);
+
+    --radius: 18px;
+    --radius-lg: 26px;
+    --shadow-sm: 0 1px 2px oklch(25% 0.015 220 / 0.04), 0 2px 8px oklch(25% 0.015 220 / 0.04);
+    --shadow-md: 0 4px 16px oklch(25% 0.015 220 / 0.06), 0 1px 3px oklch(25% 0.015 220 / 0.05);
+    --shadow-lg: 0 12px 40px oklch(25% 0.015 220 / 0.10), 0 2px 6px oklch(25% 0.015 220 / 0.05);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+                 "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  html[lang="en"] body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 560px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+  }
+
+  /* ---------- Language switcher ---------- */
+  .lang-switch {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    padding: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    user-select: none;
+  }
+  .lang-switch button {
+    border: 0;
+    background: transparent;
+    padding: 7px 14px;
+    border-radius: 99px;
+    font: inherit;
+    color: var(--ink-mute);
+    cursor: pointer;
+    transition: color .15s, background .15s;
+    min-width: 44px;
+  }
+  .lang-switch button.active {
+    background: var(--mint-deep);
+    color: white;
+    box-shadow: 0 1px 3px color-mix(in oklch, var(--mint-deep) 40%, transparent);
+  }
+  .lang-switch button:not(.active):hover { color: var(--mint-ink); }
+  .lang-switch .sep {
+    color: var(--line-strong);
+    padding: 0 2px;
+    font-weight: 400;
+    align-self: center;
+    pointer-events: none;
+  }
+
+  /* ---------- Header / Progress ---------- */
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in oklch, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(1.2) blur(12px);
+    -webkit-backdrop-filter: saturate(1.2) blur(12px);
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid color-mix(in oklch, var(--line) 70%, transparent);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    color: var(--mint-ink);
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    padding-right: 110px; /* clearance for lang switch */
+  }
+  .brand::before {
+    content: "";
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 0 4px var(--mint-tint-2);
+    flex: 0 0 auto;
+  }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .progress-label {
+    font-size: 15px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .progress-label b {
+    color: var(--mint-deep);
+    font-weight: 700;
+    font-size: 17px;
+  }
+  .progress-letters {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    letter-spacing: 0.35em;
+    color: var(--ink-mute);
+  }
+  .progress-letters span {
+    display: inline-block;
+    transition: color .3s, transform .3s;
+  }
+  .progress-letters span.done { color: var(--mint-deep); }
+  .progress-letters span.current {
+    color: var(--ink);
+    transform: translateY(-1px);
+    font-weight: 700;
+  }
+
+  .bar {
+    height: 6px;
+    background: var(--mint-tint-2);
+    border-radius: 99px;
+    overflow: hidden;
+    position: relative;
+  }
+  .bar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    background: linear-gradient(90deg, var(--mint), var(--mint-deep));
+    border-radius: 99px;
+    transition: width .45s cubic-bezier(.2,.8,.2,1);
+  }
+
+  /* ---------- Intro ---------- */
+  .intro {
+    flex: 1;
+    padding: 40px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 22px;
+  }
+  .intro h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin: 0;
+    letter-spacing: -0.01em;
+    font-weight: 700;
+  }
+  .intro h1 em {
+    font-style: normal;
+    color: var(--mint-deep);
+  }
+  .intro .lede {
+    font-size: 17px;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+
+  .letters-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 22px 22px 10px;
+    box-shadow: var(--shadow-sm);
+  }
+  .letters-card h3 {
+    margin: 0 0 14px;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  .letters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 16px;
+  }
+  .letters-grid div {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 8px 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+    border-bottom: 1px dashed var(--line);
+  }
+  .letters-grid div:nth-last-child(-n+2) { border-bottom: none; }
+  .letters-grid b {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 17px;
+    color: var(--mint-deep);
+    font-weight: 700;
+    width: 16px;
+    flex: 0 0 auto;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--mint-tint);
+    color: var(--mint-ink);
+    border-radius: 99px;
+    font-weight: 500;
+  }
+  .chip::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--mint);
+  }
+
+  /* ---------- Question ---------- */
+  .question-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 28px 24px 24px;
+  }
+  .q-letter {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: rise .5s .05s both;
+  }
+  .q-letter-badge {
+    width: 54px; height: 54px;
+    border-radius: 16px;
+    background: var(--mint-tint-2);
+    color: var(--mint-deep);
+    display: grid;
+    place-items: center;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--mint) 30%, transparent);
+    flex: 0 0 auto;
+  }
+  .q-letter-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .q-letter-meta .kw {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .q-letter-meta .cat {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+
+  .q-text {
+    font-size: 24px;
+    line-height: 1.45;
+    margin: 0 0 8px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    text-wrap: pretty;
+    opacity: 0;
+    animation: rise .5s .12s both;
+  }
+  .q-hint {
+    font-size: 15px;
+    color: var(--ink-mute);
+    line-height: 1.5;
+    margin: 0 0 28px;
+    opacity: 0;
+    animation: rise .5s .18s both;
+  }
+
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: auto;
+  }
+
+  .choice {
+    width: 100%;
+    min-height: 72px;
+    border: 2px solid var(--line-strong);
+    background: var(--surface);
+    border-radius: 20px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    font: inherit;
+    color: var(--ink);
+    text-align: left;
+    transition: transform .18s, border-color .18s, background .18s, box-shadow .18s;
+    box-shadow: var(--shadow-sm);
+    opacity: 0;
+    animation: rise .5s both;
+  }
+  .choice.yes { animation-delay: .22s; }
+  .choice.no { animation-delay: .28s; }
+
+  .choice .label {
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .choice .sub {
+    font-size: 14px;
+    color: var(--ink-mute);
+    font-weight: 500;
+  }
+  .choice .mark {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--line-strong);
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    transition: all .18s;
+  }
+  .choice.yes .mark { border-color: color-mix(in oklch, var(--mint) 50%, var(--line-strong)); }
+
+  .choice:hover:not(:disabled) {
+    border-color: var(--mint);
+    background: var(--mint-tint);
+    transform: translateY(-1px);
+  }
+  .choice:active:not(:disabled) {
+    transform: translateY(0) scale(0.99);
+  }
+  .choice.selected {
+    border-color: var(--mint-deep);
+    background: var(--mint-tint);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--mint) 25%, transparent);
+  }
+  .choice.selected .mark {
+    background: var(--mint-deep);
+    border-color: var(--mint-deep);
+  }
+  .choice.selected .mark::after {
+    content: "";
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: white;
+  }
+
+  /* ---------- Footer / Back ---------- */
+  .bottom-nav {
+    padding: 12px 24px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    min-height: 64px;
+  }
+  .back-btn {
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink-soft);
+    padding: 12px 16px;
+    border-radius: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .15s, color .15s;
+  }
+  .back-btn:hover { background: var(--mint-tint); color: var(--mint-ink); }
+  .back-btn:disabled { opacity: 0; pointer-events: none; }
+  .back-btn svg { width: 18px; height: 18px; }
+
+  .q-counter {
+    font-size: 14px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Start button ---------- */
+  .primary-btn {
+    width: 100%;
+    min-height: 64px;
+    border: 0;
+    background: linear-gradient(180deg, var(--mint-deep), color-mix(in oklch, var(--mint-deep) 85%, black));
+    color: white;
+    font: inherit;
+    font-size: 19px;
+    font-weight: 600;
+    border-radius: 18px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px color-mix(in oklch, var(--mint-deep) 35%, transparent),
+                inset 0 1px 0 color-mix(in oklch, white 25%, transparent);
+    transition: transform .15s, box-shadow .15s;
+    letter-spacing: 0.02em;
+  }
+  .primary-btn:hover { transform: translateY(-1px); }
+  .primary-btn:active { transform: translateY(0); }
+  .primary-btn.ghost {
+    background: var(--surface);
+    color: var(--mint-ink);
+    border: 1.5px solid var(--line-strong);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ---------- Result ---------- */
+  .result {
+    flex: 1;
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: rise .5s both;
+  }
+
+  .score-card {
+    border-radius: var(--radius-lg);
+    padding: 32px 26px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+  }
+  .score-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 50% 0%, var(--tint, var(--mint-tint)) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .score-card > * { position: relative; }
+
+  .risk-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    background: var(--tint, var(--mint-tint));
+    color: var(--risk-ink, var(--mint-ink));
+    border: 1px solid color-mix(in oklch, var(--risk-ink, var(--mint-ink)) 20%, transparent);
+  }
+  .risk-tag .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--risk, var(--mint-deep));
+  }
+
+  .score-number {
+    margin: 20px 0 4px;
+    font-size: 88px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--risk-ink, var(--mint-ink));
+    font-variant-numeric: tabular-nums;
+  }
+  .score-number .of {
+    font-size: 32px;
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .risk-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 6px 0 6px;
+    letter-spacing: -0.01em;
+  }
+  .risk-explain {
+    font-size: 15.5px;
+    color: var(--ink-soft);
+    max-width: 32ch;
+    margin: 0 auto;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  .score-pips {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 22px;
+  }
+  .score-pips span {
+    width: 22px; height: 6px;
+    border-radius: 99px;
+    background: var(--line-strong);
+  }
+  .score-pips span.on { background: var(--risk, var(--mint-deep)); }
+
+  .modifier-note {
+    margin-top: 18px;
+    padding: 12px 14px;
+    background: color-mix(in oklch, var(--risk, var(--mint-deep)) 10%, var(--surface));
+    border-radius: 12px;
+    font-size: 13.5px;
+    color: var(--risk-ink, var(--mint-ink));
+    line-height: 1.5;
+    text-align: left;
+    border: 1px solid color-mix(in oklch, var(--risk, var(--mint-deep)) 22%, transparent);
+  }
+  .modifier-note b { font-weight: 700; }
+
+  .breakdown {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 6px 18px;
+  }
+  .breakdown h4 {
+    margin: 14px 0 10px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  .breakdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .breakdown li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--line);
+    font-size: 15px;
+  }
+  .breakdown li:last-child { border-bottom: none; }
+  .breakdown .b-letter {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-weight: 700;
+    width: 24px;
+    color: var(--mint-deep);
+    font-size: 15px;
+    flex: 0 0 auto;
+  }
+  .breakdown .b-text {
+    flex: 1;
+    color: var(--ink-soft);
+  }
+  .breakdown .b-ans {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    flex: 0 0 auto;
+  }
+  .breakdown .b-ans.yes { background: var(--mint-tint-2); color: var(--mint-ink); }
+  .breakdown .b-ans.no { background: var(--mint-tint); color: var(--ink-mute); }
+
+  .edu {
+    background: var(--mint-tint);
+    border-radius: var(--radius);
+    padding: 20px 20px;
+    border: 1px solid color-mix(in oklch, var(--mint) 25%, transparent);
+  }
+  .edu h4 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    color: var(--mint-ink);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .edu h4::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--mint-deep);
+    flex: 0 0 auto;
+  }
+  .edu p {
+    margin: 0 0 8px;
+    font-size: 14.5px;
+    color: var(--mint-ink);
+    line-height: 1.6;
+  }
+  .edu p:last-child { margin-bottom: 0; }
+
+  .advice {
+    background: color-mix(in oklch, var(--risk, var(--mint)) 8%, var(--surface));
+    border: 1px solid color-mix(in oklch, var(--risk, var(--mint)) 30%, transparent);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .advice-icon {
+    width: 38px; height: 38px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--risk, var(--mint-deep));
+    display: grid;
+    place-items: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .advice-body { font-size: 15px; color: var(--ink); line-height: 1.55; }
+  .advice-body b { color: var(--risk-ink, var(--mint-ink)); }
+
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .disclaimer {
+    padding: 18px 24px 28px;
+    font-size: 12px;
+    color: var(--ink-mute);
+    text-align: center;
+    line-height: 1.6;
+    border-top: 1px solid var(--line);
+    margin-top: auto;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .view { display: none; flex-direction: column; flex: 1; }
+  .view.active { display: flex; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  @media (min-width: 600px) {
+    body { padding: 24px 0; }
+    .app {
+      min-height: calc(100dvh - 48px);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px oklch(25% 0.015 220 / 0.08);
+      border: 1px solid var(--line);
+    }
+    .intro h1 { font-size: 36px; }
+    .q-text { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="app" role="application">
+
+  <!-- Language switcher — always top-right -->
+  <div class="lang-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="zh" id="lang-zh">中文</button>
+    <span class="sep">/</span>
+    <button type="button" data-lang="en" id="lang-en">EN</button>
+  </div>
+
+  <!-- ============ INTRO ============ -->
+  <section id="view-intro" class="view active">
+    <header class="top" style="border-bottom:none;">
+      <div class="brand" data-i18n="brand"></div>
+    </header>
+
+    <div class="intro">
+      <div>
+        <h1>
+          <span data-i18n="introTitle1"></span><br/>
+          <span data-i18n="introTitle2"></span> <em data-i18n="introTitleAccent"></em>
+        </h1>
+        <p class="lede" data-i18n="introLede"></p>
+      </div>
+
+      <div class="letters-card">
+        <h3 data-i18n="dimensionsTitle"></h3>
+        <div class="letters-grid" id="dimensionsGrid"></div>
+      </div>
+
+      <div class="meta-row">
+        <span class="chip" data-i18n="chipCount"></span>
+        <span class="chip" data-i18n="chipTime"></span>
+        <span class="chip" data-i18n="chipLocal"></span>
+      </div>
+
+      <button class="primary-btn" id="startBtn" data-i18n="startBtn"></button>
+    </div>
+
+    <footer class="disclaimer" data-i18n="disclaimerShort"></footer>
+  </section>
+
+  <!-- ============ QUESTIONS ============ -->
+  <section id="view-question" class="view">
+    <header class="top">
+      <div class="progress-row">
+        <div class="progress-label" id="progressLabel"></div>
+        <div class="progress-letters" id="letters">
+          <span>S</span><span>T</span><span>O</span><span>P</span><span>B</span><span>A</span><span>N</span><span>G</span>
+        </div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+    </header>
+
+    <div class="question-wrap" id="qWrap"></div>
+
+    <nav class="bottom-nav">
+      <button class="back-btn" id="backBtn" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        <span id="backBtnLabel"></span>
+      </button>
+      <div class="q-counter" id="qCounter"></div>
+    </nav>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="view-result" class="view">
+    <header class="top" style="border-bottom:none;">
+      <div class="brand" data-i18n="resultBrand"></div>
+    </header>
+
+    <div class="result" id="resultBody"></div>
+
+    <footer class="disclaimer" data-i18n="disclaimerLong"></footer>
+  </section>
+
+</main>
+
+<script src="i18n.js"></script>
+<script>
+  // ---------- Locale state ----------
+  let lang = window.resolveLocale();
+  let t = window.I18N[lang];
+  window.persistLocale(lang);
+
+  function setLang(newLang) {
+    if (!window.I18N[newLang] || newLang === lang) return;
+    lang = newLang;
+    t = window.I18N[lang];
+    window.persistLocale(lang);
+    applyTranslations();
+    // Re-render whatever is visible
+    if (views.question.classList.contains("active")) renderQuestion();
+    if (views.result.classList.contains("active")) renderResult();
+    updateLangButtons();
+  }
+
+  function updateLangButtons() {
+    document.getElementById("lang-zh").classList.toggle("active", lang === "zh");
+    document.getElementById("lang-en").classList.toggle("active", lang === "en");
+  }
+
+  // ---------- Static text binding ----------
+  function applyTranslations() {
+    document.title = lang === "zh"
+      ? "STOP-BANG · 睡眠呼吸暂停风险筛查"
+      : "STOP-BANG · OSA Risk Screening";
+
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      const key = el.getAttribute("data-i18n");
+      if (t[key] != null && typeof t[key] === "string") {
+        el.textContent = t[key];
+      }
+    });
+
+    // Dimensions grid
+    const grid = document.getElementById("dimensionsGrid");
+    if (grid) {
+      grid.innerHTML = t.questions.map((q, i) =>
+        `<div><b>${q.letter}</b><span>${t.dimensionsList[i]}</span></div>`
+      ).join("");
+    }
+
+    // Language switcher aria
+    document.querySelector(".lang-switch").setAttribute("aria-label", t.langSwitchAria);
+
+    // Back button label
+    document.getElementById("backBtnLabel").textContent = t.backBtn;
+  }
+
+  // ---------- State ----------
+  let answers = new Array(8).fill(null);
+  let idx = 0;
+
+  const views = {
+    intro: document.getElementById("view-intro"),
+    question: document.getElementById("view-question"),
+    result: document.getElementById("view-result"),
+  };
+  function show(name) {
+    Object.entries(views).forEach(([k, el]) => el.classList.toggle("active", k === name));
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  // ---------- Start ----------
+  document.getElementById("startBtn").addEventListener("click", () => {
+    answers = new Array(8).fill(null);
+    idx = 0;
+    renderQuestion();
+    show("question");
+  });
+
+  // ---------- Question rendering ----------
+  const qWrap = document.getElementById("qWrap");
+  const barFill = document.getElementById("barFill");
+  const progressLabel = document.getElementById("progressLabel");
+  const qCounter = document.getElementById("qCounter");
+  const backBtn = document.getElementById("backBtn");
+  const letters = document.getElementById("letters");
+
+  function renderQuestion() {
+    const q = t.questions[idx];
+    const sel = answers[idx];
+
+    qWrap.innerHTML = `
+      <div class="q-letter">
+        <div class="q-letter-badge">${q.letter}</div>
+        <div class="q-letter-meta">
+          <div class="kw">${q.kw}</div>
+          <div class="cat">${q.cat}</div>
+        </div>
+      </div>
+      <p class="q-text">${q.text}</p>
+      ${q.hint ? `<p class="q-hint">${q.hint}</p>` : `<p class="q-hint" style="visibility:hidden;">.</p>`}
+      <div class="choices">
+        <button class="choice yes ${sel === true ? "selected" : ""}" data-val="yes" aria-pressed="${sel === true}">
+          <div>
+            <div class="label">${t.ansYes}</div>
+            <div class="sub">${t.ansYesSub}</div>
+          </div>
+          <div class="mark"></div>
+        </button>
+        <button class="choice no ${sel === false ? "selected" : ""}" data-val="no" aria-pressed="${sel === false}">
+          <div>
+            <div class="label">${t.ansNo}</div>
+            <div class="sub">${t.ansNoSub}</div>
+          </div>
+          <div class="mark"></div>
+        </button>
+      </div>
+    `;
+
+    qWrap.querySelectorAll(".choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const val = btn.dataset.val === "yes";
+        answers[idx] = val;
+
+        qWrap.querySelectorAll(".choice").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        const answeredCount = answers.filter(a => a !== null).length;
+        qCounter.textContent = t.answeredLabel(answeredCount);
+
+        setTimeout(() => {
+          if (idx < 7) {
+            idx++;
+            renderQuestion();
+          } else {
+            renderResult();
+            show("result");
+          }
+        }, 260);
+      });
+    });
+
+    progressLabel.innerHTML = t.progressLabel(`<b>${idx + 1}</b>`).replace(/&lt;b&gt;/g, "<b>").replace(/&lt;\/b&gt;/g, "</b>");
+    // since progressLabel returns plain string, wrap current num in bold manually
+    progressLabel.innerHTML = (lang === "zh"
+      ? `第 <b>${idx + 1}</b> / 8 题`
+      : `Question <b>${idx + 1}</b> of 8`);
+
+    const pct = ((idx + 1) / 8) * 100;
+    barFill.style.width = pct + "%";
+
+    [...letters.querySelectorAll("span")].forEach((s, i) => {
+      s.classList.toggle("done", i < idx);
+      s.classList.toggle("current", i === idx);
+    });
+
+    const answeredCount = answers.filter(a => a !== null).length;
+    qCounter.textContent = t.answeredLabel(answeredCount);
+
+    backBtn.disabled = idx === 0;
+  }
+
+  backBtn.addEventListener("click", () => {
+    if (idx > 0) {
+      idx--;
+      renderQuestion();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!views.question.classList.contains("active")) return;
+    if (e.key === "ArrowLeft" && idx > 0) { idx--; renderQuestion(); return; }
+    const yesKeys = ["y", "Y", "1"];
+    const noKeys = ["n", "N", "0", "2"];
+    if (yesKeys.includes(e.key)) qWrap.querySelector('.choice[data-val="yes"]')?.click();
+    if (noKeys.includes(e.key)) qWrap.querySelector('.choice[data-val="no"]')?.click();
+  });
+
+  // ---------- Scoring ----------
+  function computeResult() {
+    const yes = answers.map(a => a === true);
+    const total = yes.filter(Boolean).length;
+    const stopScore = yes.slice(0, 4).filter(Boolean).length;
+    const isMale = yes[7];
+    const highBMI = yes[4];
+    const highNeck = yes[6];
+
+    const mod_male = stopScore >= 2 && isMale;
+    const mod_bmi  = stopScore >= 2 && highBMI;
+    const mod_neck = stopScore >= 2 && highNeck;
+    const modifier = mod_male || mod_bmi || mod_neck;
+
+    let level;
+    if (total >= 5) level = "high";
+    else if (total >= 3) level = "mid";
+    else level = "low";
+
+    if (modifier && level !== "high") level = "high";
+
+    return { total, stopScore, level, modifier, mod_male, mod_bmi, mod_neck };
+  }
+
+  const RISK_STYLE = {
+    low:  { color: "var(--low)",  tint: "var(--low-tint)",  ink: "var(--low-ink)",  key: "riskLow"  },
+    mid:  { color: "var(--mid)",  tint: "var(--mid-tint)",  ink: "var(--mid-ink)",  key: "riskMid"  },
+    high: { color: "var(--high)", tint: "var(--high-tint)", ink: "var(--high-ink)", key: "riskHigh" }
+  };
+
+  const resultBody = document.getElementById("resultBody");
+
+  function renderResult() {
+    const r = computeResult();
+    const style = RISK_STYLE[r.level];
+    const cfg = t[style.key];
+
+    const pips = Array.from({ length: 8 }, (_, i) =>
+      `<span class="${i < r.total ? "on" : ""}"></span>`
+    ).join("");
+
+    let modifierHTML = "";
+    if (r.modifier && r.total < 5) {
+      const reasons = [];
+      if (r.mod_male) reasons.push(t.modReasonMale);
+      if (r.mod_bmi)  reasons.push(t.modReasonBMI);
+      if (r.mod_neck) reasons.push(t.modReasonNeck);
+      modifierHTML = `
+        <div class="modifier-note">
+          <b>${t.modifierPrefix}</b> ${t.modifierBody(r.total, reasons)}
+        </div>
+      `;
+    }
+
+    const breakdownHTML = t.questions.map((q, i) => `
+      <li>
+        <span class="b-letter">${q.letter}</span>
+        <span class="b-text">${q.kw}</span>
+        <span class="b-ans ${answers[i] ? "yes" : "no"}">${answers[i] ? t.ansYes : t.ansNo}</span>
+      </li>
+    `).join("");
+
+    resultBody.innerHTML = `
+      <div class="score-card" style="--risk: ${style.color}; --tint: ${style.tint}; --risk-ink: ${style.ink};">
+        <span class="risk-tag"><span class="dot"></span>${cfg.tag}</span>
+        <div class="score-number">${r.total}<span class="of">/ 8</span></div>
+        <div class="risk-title">${cfg.title}</div>
+        <p class="risk-explain">${cfg.explain}</p>
+        <div class="score-pips">${pips}</div>
+        ${modifierHTML}
+      </div>
+
+      <div class="advice" style="--risk: ${style.color}; --risk-ink: ${style.ink};">
+        <div class="advice-icon" aria-hidden="true">!</div>
+        <div class="advice-body">
+          <b>${t.adviceLabel}</b> ${cfg.advice}
+        </div>
+      </div>
+
+      <div class="edu">
+        <h4>${t.eduTitle}</h4>
+        <p>${t.eduP1}</p>
+        <p>${t.eduP2}</p>
+      </div>
+
+      <div class="breakdown">
+        <h4>${t.breakdownTitle}</h4>
+        <ul>${breakdownHTML}</ul>
+      </div>
+
+      <div class="result-actions">
+        <button class="primary-btn" id="restartBtn">${t.restartBtn}</button>
+        <button class="primary-btn ghost" id="reviewBtn">${t.reviewBtn}</button>
+      </div>
+    `;
+
+    document.getElementById("restartBtn").addEventListener("click", () => {
+      answers = new Array(8).fill(null);
+      idx = 0;
+      show("intro");
+    });
+    document.getElementById("reviewBtn").addEventListener("click", () => {
+      idx = 0;
+      renderQuestion();
+      show("question");
+    });
+  }
+
+  // ---------- Language buttons ----------
+  document.getElementById("lang-zh").addEventListener("click", () => setLang("zh"));
+  document.getElementById("lang-en").addEventListener("click", () => setLang("en"));
+
+  // ---------- Init ----------
+  applyTranslations();
+  updateLangButtons();
+</script>
+</body>
+</html>
