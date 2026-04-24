@@ -2,7 +2,7 @@
 
 一份基于国际通用 **STOP-BANG** 问卷的阻塞性睡眠呼吸暂停（OSA）风险自测工具。8 道题，约 2 分钟完成，帮助你初步评估风险等级。
 
-**在线体验**：https://stop-bang.pages.dev <!-- 部署完成后请替换为你的实际域名 -->
+**在线体验**：https://stop-bang.yearliny8.workers.dev
 
 > [English](#english) | [中文](#中文)
 
