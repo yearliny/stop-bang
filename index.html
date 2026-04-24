@@ -710,6 +710,24 @@
     border-top: 1px solid var(--line);
     margin-top: auto;
   }
+  .disclaimer .credit {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    opacity: 0.75;
+  }
+  .disclaimer .credit a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px dotted currentColor;
+    padding-bottom: 1px;
+    transition: color 160ms ease, border-color 160ms ease, opacity 160ms ease;
+  }
+  .disclaimer .credit a:hover {
+    color: var(--mint-deep);
+    border-bottom-color: var(--mint-deep);
+    opacity: 1;
+  }
 
   @keyframes rise {
     from { opacity: 0; transform: translateY(10px); }
@@ -780,7 +798,10 @@
       <button class="primary-btn" id="startBtn" data-i18n="startBtn"></button>
     </div>
 
-    <footer class="disclaimer" data-i18n="disclaimerShort"></footer>
+    <footer class="disclaimer">
+      <span data-i18n="disclaimerShort"></span>
+      <span class="credit">Made by <a href="https://yearliny.com/" target="_blank" rel="noopener">yearliny</a></span>
+    </footer>
   </section>
 
   <!-- ============ QUESTIONS ============ -->
@@ -814,7 +835,10 @@
 
     <div class="result" id="resultBody"></div>
 
-    <footer class="disclaimer" data-i18n="disclaimerLong"></footer>
+    <footer class="disclaimer">
+      <span data-i18n="disclaimerLong"></span>
+      <span class="credit">Made by <a href="https://yearliny.com/" target="_blank" rel="noopener">yearliny</a></span>
+    </footer>
   </section>
 
 </main>
