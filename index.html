@@ -3,7 +3,67 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>STOP-BANG · OSA Risk Screening</title>
+<title>STOP-BANG 睡眠呼吸暂停（OSA）风险自测 · 8 题双语在线量表</title>
+
+<meta name="description" content="基于国际通用 STOP-BANG 量表的阻塞性睡眠呼吸暂停（OSA）在线自测工具：8 道题约 2 分钟评估风险等级。中英双语，数据仅保存在本机浏览器，免费、无追踪。" />
+<meta name="keywords" content="STOP-BANG,睡眠呼吸暂停,OSA,阻塞性睡眠呼吸暂停,风险筛查,睡眠自测,打鼾,sleep apnea questionnaire,obstructive sleep apnea screening" />
+<meta name="author" content="yearliny" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<meta name="theme-color" content="#5fb09b" />
+<meta name="format-detection" content="telephone=no" />
+
+<link rel="canonical" href="https://stopbang.yearliny.com/" />
+<link rel="alternate" hreflang="zh-CN" href="https://stopbang.yearliny.com/?lang=zh" />
+<link rel="alternate" hreflang="en" href="https://stopbang.yearliny.com/?lang=en" />
+<link rel="alternate" hreflang="x-default" href="https://stopbang.yearliny.com/" />
+
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="STOP-BANG OSA Screening" />
+<meta property="og:title" content="STOP-BANG 睡眠呼吸暂停（OSA）风险自测" />
+<meta property="og:description" content="基于国际通用 STOP-BANG 量表的 OSA 风险在线自测：8 道题约 2 分钟，中英双语，数据仅保存在本机浏览器。" />
+<meta property="og:url" content="https://stopbang.yearliny.com/" />
+<meta property="og:locale" content="zh_CN" />
+<meta property="og:locale:alternate" content="en_US" />
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="STOP-BANG 睡眠呼吸暂停（OSA）风险自测" />
+<meta name="twitter:description" content="基于 STOP-BANG 量表的 OSA 风险在线筛查：8 题约 2 分钟，中英双语，免费、无追踪。" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MedicalWebPage",
+  "name": "STOP-BANG 睡眠呼吸暂停风险筛查",
+  "alternateName": "STOP-BANG OSA Risk Screening",
+  "description": "基于 STOP-BANG 量表的阻塞性睡眠呼吸暂停（OSA）在线自测工具，8 题约 2 分钟。",
+  "url": "https://stopbang.yearliny.com/",
+  "inLanguage": ["zh-CN", "en"],
+  "audience": { "@type": "PeopleAudience", "audienceType": "General Public" },
+  "about": {
+    "@type": "MedicalCondition",
+    "name": "Obstructive Sleep Apnea",
+    "alternateName": "阻塞性睡眠呼吸暂停",
+    "code": {
+      "@type": "MedicalCode",
+      "codeValue": "G47.33",
+      "codingSystem": "ICD-10"
+    }
+  },
+  "mainContentOfPage": {
+    "@type": "WebPageElement",
+    "name": "STOP-BANG Questionnaire",
+    "description": "8-item questionnaire covering Snoring, Tiredness, Observed apnea, blood Pressure, BMI, Age, Neck circumference, and Gender."
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "yearliny",
+    "url": "https://yearliny.com/"
+  }
+}
+</script>
+
 <style>
   :root {
     --bg: oklch(98.5% 0.008 180);
@@ -763,7 +823,7 @@
 <main class="app" role="application">
 
   <!-- Language switcher — always top-right -->
-  <div class="lang-switch" role="group" aria-label="Language">
+  <div class="lang-switch" role="group" aria-label="切换语言">
     <button type="button" data-lang="zh" id="lang-zh">中文</button>
     <span class="sep">/</span>
     <button type="button" data-lang="en" id="lang-en">EN</button>
@@ -772,34 +832,43 @@
   <!-- ============ INTRO ============ -->
   <section id="view-intro" class="view active">
     <header class="top" style="border-bottom:none;">
-      <div class="brand" data-i18n="brand"></div>
+      <div class="brand" data-i18n="brand">STOP-BANG · OSA 风险筛查</div>
     </header>
 
     <div class="intro">
       <div>
         <h1>
-          <span data-i18n="introTitle1"></span><br/>
-          <span data-i18n="introTitle2"></span> <em data-i18n="introTitleAccent"></em>
+          <span data-i18n="introTitle1">了解您的</span><br/>
+          <span data-i18n="introTitle2">阻塞性睡眠呼吸</span> <em data-i18n="introTitleAccent">暂停风险</em>
         </h1>
-        <p class="lede" data-i18n="introLede"></p>
+        <p class="lede" data-i18n="introLede">一份国际通用的 8 题自测量表，帮助您初步评估风险等级。大约需要 2 分钟。</p>
       </div>
 
       <div class="letters-card">
-        <h3 data-i18n="dimensionsTitle"></h3>
-        <div class="letters-grid" id="dimensionsGrid"></div>
+        <h3 data-i18n="dimensionsTitle">量表涵盖 8 个维度</h3>
+        <div class="letters-grid" id="dimensionsGrid">
+          <div><b>S</b><span>打鼾 Snoring</span></div>
+          <div><b>T</b><span>疲倦 Tired</span></div>
+          <div><b>O</b><span>目击 Observed</span></div>
+          <div><b>P</b><span>血压 Pressure</span></div>
+          <div><b>B</b><span>BMI</span></div>
+          <div><b>A</b><span>年龄 Age</span></div>
+          <div><b>N</b><span>颈围 Neck</span></div>
+          <div><b>G</b><span>性别 Gender</span></div>
+        </div>
       </div>
 
       <div class="meta-row">
-        <span class="chip" data-i18n="chipCount"></span>
-        <span class="chip" data-i18n="chipTime"></span>
-        <span class="chip" data-i18n="chipLocal"></span>
+        <span class="chip" data-i18n="chipCount">8 道题</span>
+        <span class="chip" data-i18n="chipTime">约 2 分钟</span>
+        <span class="chip" data-i18n="chipLocal">数据仅存于本机</span>
       </div>
 
-      <button class="primary-btn" id="startBtn" data-i18n="startBtn"></button>
+      <button class="primary-btn" id="startBtn" data-i18n="startBtn">开始筛查</button>
     </div>
 
     <footer class="disclaimer">
-      <span data-i18n="disclaimerShort"></span>
+      <span data-i18n="disclaimerShort">本工具仅供筛查参考,不能替代专业医疗诊断</span>
       <span class="credit">Made by <a href="https://yearliny.com/" target="_blank" rel="noopener">yearliny</a></span>
     </footer>
   </section>
@@ -830,13 +899,13 @@
   <!-- ============ RESULT ============ -->
   <section id="view-result" class="view">
     <header class="top" style="border-bottom:none;">
-      <div class="brand" data-i18n="resultBrand"></div>
+      <div class="brand" data-i18n="resultBrand">筛查结果</div>
     </header>
 
     <div class="result" id="resultBody"></div>
 
     <footer class="disclaimer">
-      <span data-i18n="disclaimerLong"></span>
+      <span data-i18n="disclaimerLong">本工具仅供筛查参考,不能替代专业医疗诊断 · 结果仅保存在您的浏览器中</span>
       <span class="credit">Made by <a href="https://yearliny.com/" target="_blank" rel="noopener">yearliny</a></span>
     </footer>
   </section>
@@ -870,8 +939,8 @@
   // ---------- Static text binding ----------
   function applyTranslations() {
     document.title = lang === "zh"
-      ? "STOP-BANG · 睡眠呼吸暂停风险筛查"
-      : "STOP-BANG · OSA Risk Screening";
+      ? "STOP-BANG 睡眠呼吸暂停（OSA）风险自测 · 8 题双语在线量表"
+      : "STOP-BANG · Obstructive Sleep Apnea (OSA) Risk Screening Questionnaire";
 
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
